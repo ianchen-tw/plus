@@ -1,4 +1,6 @@
-# API server
+# plus
+
+`plus` is an API server for students
 
 ## Installation
 
