@@ -15,9 +15,13 @@ pipenv install --dev
 + run the development server
 
 	```
-	pipenv run dev
+	make dev
 	```
 + format your code
 	```
-	pipenv run format
+	make format
+	```
++ run tests
+	```
+	make test
 	```

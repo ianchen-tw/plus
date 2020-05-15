@@ -7,10 +7,12 @@ verify_ssl = true
 dev = "uvicorn app.main:server --reload"
 prod = "uvicorn app.main:server"
 format= "black app" # Linter
-test = "moght run: 'python -m pytest'... not yet"
+test = "pytest --pyargs app"
+
 
 [dev-packages]
 black = "==19.10b0" # https://github.com/psf/black/issues/517
+pytest = "*"
 
 [packages]
 fastapi = "*"
