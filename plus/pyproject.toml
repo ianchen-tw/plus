@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "app"
+version = "0.1.0"
+description = "api server for students"
+authors = ["Ian Chen <ianre657@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+fastapi = "^0.54.1"
+uvicorn = "^0.11.5"
+python-dotenv = "^0.13.0"
+black = "^19.10b0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.4.2"
+black = "^19.10b0"
+
+[tool.black]
+line-length = 90
+
+exclude = '''
+/(
+    \.eggs
+  | \.git
+)
+'''
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

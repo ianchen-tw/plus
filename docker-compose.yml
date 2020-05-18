@@ -1,0 +1,13 @@
+version: '3.3'
+services:
+    api-server:
+        image: 'ianre657/plus-api-server:latest'
+        environment:
+            - VARIABLE_NAME=server
+            - MODULE_NAME=app.main
+        ports:
+            # ouside conatiner/ container
+            - "10080:80"
+        build:
+            context: ./plus
+            dockerfile: plus.dockerfile

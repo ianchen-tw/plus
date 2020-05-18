@@ -1,0 +1,8 @@
+version: '3.3'
+services:
+    api-server:
+        volumes:
+            - ./plus:/app
+
+        # specified in tiangolo/uvicorn-gunicorn-fastapi:python3.7
+        command: /start-reload.sh

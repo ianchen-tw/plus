@@ -1,4 +1,5 @@
 .vscode
+plus/*.env
 
 
 ## Python deps

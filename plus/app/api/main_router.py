@@ -2,7 +2,7 @@ import logging
 
 from fastapi import APIRouter
 from fastapi import status
-from app.api.v1.endpoints import users
+from app.api.endpoints import users
 
 logger = logging.getLogger(__name__)
 

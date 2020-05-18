@@ -4,7 +4,7 @@ from fastapi import (
     FastAPI,
     Query,
 )
-from app.api.v1.main_router import main_router
+from app.api.main_router import main_router
 from pydantic import BaseModel
 
 from app.core.config import settings

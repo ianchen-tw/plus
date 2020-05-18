@@ -1,10 +1,13 @@
-.PHONY: test format dev
+.PHONY: test format dev prod clean
 
-dev:
-	pipenv run dev
+clean:
+	rm -rf dist *.egg-info .pytest_cache
 
-test:
-	pipenv run test
+up:
+	docker-compose up -d
 
-format:
-	pipenv run format
+down:
+	docker-compose down
+
+shell: up
+	docker-compose exec api-server bash
