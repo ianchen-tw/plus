@@ -1,4 +1,4 @@
-<img src="./docs/nplus_logo.png" alt="plus-logo" align="right" height="300" />
+<img src="./docs/nplus_logo.png" alt="plus-logo" align="right" height="300" width="300" />
 
 ## Description
 
