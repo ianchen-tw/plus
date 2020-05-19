@@ -4,6 +4,7 @@ from pydantic import BaseSettings
 class Settings(BaseSettings):
     API_V1_STR = "/api/v1"
     PROJECT_NAME: str
+    SQLALCHEMY_DATABASE_URI: str
 
     class Config:
         case_sensitive = True
