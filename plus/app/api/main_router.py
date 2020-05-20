@@ -2,7 +2,7 @@ import logging
 
 from fastapi import APIRouter
 from fastapi import status
-from app.api.endpoints import users
+from app.api.endpoints import users, college
 
 logger = logging.getLogger(__name__)
 
@@ -11,9 +11,8 @@ main_router = APIRouter()
 
 def include_routers():
     global main_router
-    main_router.include_router(
-        users.router, prefix="/users", tags=["users"],
-    )
+    main_router.include_router(users.router, prefix="/users", tags=["users"])
+    main_router.include_router(college.router, prefix="/college", tags=["college"])
 
 
 @main_router.get(
