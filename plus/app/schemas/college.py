@@ -1,11 +1,27 @@
 from typing import Optional
 from datetime import datetime
+from typing import Optional
+
 from pydantic import BaseModel
+
 
 # Shared properties
 class CollegeBase(BaseModel):
     name: str
     code: str
+
+
+class CollegeCreate(CollegeBase):
+    """Class for validating create college request"""
+
+    pass
+
+
+class CollegeUpdate(CollegeBase):
+    """Class for validating update college request"""
+
+    name: Optional[str] = None
+    code: Optional[str] = None
 
 
 # Properties shared by models stored in DB
