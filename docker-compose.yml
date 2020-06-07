@@ -1,13 +1,149 @@
 version: '3.3'
 services:
+    
     api-server:
         image: 'ianre657/plus-api-server:latest'
+        depends_on:
+            - db
+        env_file:
+            - .env
         environment:
+            # see https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker for reference
             - VARIABLE_NAME=server
             - MODULE_NAME=app.main
-        ports:
-            # ouside conatiner/ container
-            - "10080:80"
+            - PORT=8888
+
         build:
             context: ./plus
             dockerfile: plus.dockerfile
+        deploy:
+            labels:
+                - traefik.enable=true
+                - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
+                - traefik.http.routers.api-server.rule= PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
+
+    db:
+        image: postgres:12
+        volumes:
+            - app-db-data:/var/lib/postgresql/data/pgdata
+        env_file:
+            - .env
+        environment:
+            - PGDATA=/var/lib/postgresql/data/pgdata
+        deploy:
+            placement:
+                constraints:
+                - node.labels.${STACK_NAME?Variable not set}.app-db-data == true
+
+    pgadmin:
+        image: dpage/pgadmin4
+        networks:
+            - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+            - default
+        depends_on:
+            - db
+        env_file:
+        - .env
+        deploy:
+        labels:
+            - traefik.enable=true
+            - traefik.docker.network=${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+            - traefik.constraint-label=${TRAEFIK_PUBLIC_TAG?Variable not set}
+            - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-http.rule=Host(`pgadmin.${DOMAIN?Variable not set}`)
+            - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-http.entrypoints=http
+            - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-http.middlewares=${STACK_NAME?Variable not set}-https-redirect
+            - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-https.rule=Host(`pgadmin.${DOMAIN?Variable not set}`)
+            - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-https.entrypoints=https
+            - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-https.tls=true
+            - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-https.tls.certresolver=le
+            - traefik.http.services.${STACK_NAME?Variable not set}-pgadmin.loadbalancer.server.port=5050
+
+    # reverse proxy
+    traefik:
+        # Use the latest Traefik image
+        image: traefik:v2.2
+        networks:
+            - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+            - default
+        volumes:
+            # Add Docker as a mounted volume, so that Traefik can read the labels of other services
+            - /var/run/docker.sock:/var/run/docker.sock
+
+            # Mount the volume to store the certificates
+            # - traefik-public-certificates:/certificates
+        
+        command:
+            # Enable Docker in Traefik, so that it reads labels from Docker services
+            - --providers.docker
+            # Add a constraint to only use services with the label for this stack
+            # from the env var TRAEFIK_TAG
+            - --providers.docker.constraints=Label(`traefik.constraint-label-stack`, `${TRAEFIK_TAG?Variable not set}`)
+            # Do not expose all Docker services, only the ones explicitly exposed
+            - --providers.docker.exposedbydefault=false
+            # Enable Docker Swarm mode
+            - --providers.docker.swarmmode
+            # Enable the access log, with HTTP requests
+            - --accesslog
+            # Enable the Traefik log, for configurations and errors
+            - --log
+            # Enable the Dashboard and API
+            - --api
+        
+        labels:
+            # Enable Traefik for this service, to make it available in the public network
+            - traefik.enable=true
+            - traefik.http.routers.${STACK_NAME?Variable not set}-traefik-public-http.rule=Host(`${DOMAIN?Variable not set}`)
+            - traefik.http.services.${STACK_NAME?Variable not set}-traefik-public.loadbalancer.server.port=80
+
+        labels: # labels not confirmed of usage
+            # Use the traefik-public network (declared below)
+            - traefik.docker.network=traefik-public
+            # Use the custom label "traefik.constraint-label=traefik-public"
+            # This public Traefik will only use services with this label
+            # That way you can add other internal Traefik instances per stack if needed
+            - traefik.constraint-label=traefik-public
+
+            # # admin-auth middleware with HTTP Basic auth
+            # # Using the environment variables USERNAME and HASHED_PASSWORD
+            # - traefik.http.middlewares.admin-auth.basicauth.users=${USERNAME?Variable not set}:${HASHED_PASSWORD?Variable not set}
+
+            # # https-redirect middleware to redirect HTTP to HTTPS
+            # # It can be re-used by other stacks in other Docker Compose files
+            # - traefik.http.middlewares.https-redirect.redirectscheme.scheme=https
+            # - traefik.http.middlewares.https-redirect.redirectscheme.permanent=true
+
+            # # traefik-http set up only to use the middleware to redirect to https
+            # # Uses the environment variable DOMAIN
+            # - traefik.http.routers.traefik-public-http.rule=Host(`${DOMAIN?Variable not set}`)
+            # - traefik.http.routers.traefik-public-http.entrypoints=http
+            # - traefik.http.routers.traefik-public-http.middlewares=https-redirect
+
+            # # traefik-https the actual router using HTTPS
+            # # Uses the environment variable DOMAIN
+            # - traefik.http.routers.traefik-public-https.rule=Host(`${DOMAIN?Variable not set}`)
+            # - traefik.http.routers.traefik-public-https.entrypoints=https
+            # - traefik.http.routers.traefik-public-https.tls=true
+
+            # # Use the special Traefik service api@internal with the web UI/Dashboard
+            # - traefik.http.routers.traefik-public-https.service=api@internal
+
+            # # Use the "le" (Let's Encrypt) resolver created below
+            # - traefik.http.routers.traefik-public-https.tls.certresolver=le
+
+            # # Enable HTTP Basic auth, using the middleware created above
+            # - traefik.http.routers.traefik-public-https.middlewares=admin-auth
+            # # Define the port inside of the Docker service to use
+            # - traefik.http.services.traefik-public.loadbalancer.server.port=8080
+        
+        networks:
+            # Use the public network created to be shared between Traefik and
+            # any other service that needs to be publicly available with HTTPS
+            - traefik-public
+
+volumes:
+    app-db-data:
+
+networks:
+    traefik-public:
+        # TODO: variablize this to run test scripts
+        external: 'false'

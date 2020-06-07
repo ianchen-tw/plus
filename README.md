@@ -18,8 +18,9 @@ Happy coding!
 1. Install `docker` and `docker-compose` before starting to development
 
 2. Propagate the environment file
+
 	```bash
-	cp env_template/dev.env plus/dev.env
+	./onboarding.sh
 	```
 
 ## Usage
@@ -30,7 +31,13 @@ Happy coding!
 make up
 ```
 
-The api server will be hosted on `localhost:10080` in the background.
+The serivices will be hosted on `localhost` in the background. see the ports defined below
+
+|||
+|:-:|:-:|
+|service|port|
+|api-server|8888|
+|pgAdmin|5050|
 
 Note: This would run our serer in the background, use `docker-compose up` to run it in the foreground.
 

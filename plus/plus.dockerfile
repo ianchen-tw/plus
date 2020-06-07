@@ -14,7 +14,4 @@ RUN poetry install --no-root
 
 COPY . /app
 
-# TODO: use other method
-COPY dev.env /app/dev.env
-
 ENV PATH="/app/scripts/:${PATH}"

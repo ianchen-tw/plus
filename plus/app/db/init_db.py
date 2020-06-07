@@ -9,16 +9,21 @@ from app.db import base  # noqa: F401
 # for more details: https://github.com/tiangolo/full-stack-fastapi-postgresql/issues/28
 
 
-def init_db(db: Session) -> None:
+def init_db(db: Session, use_fakedata=True) -> None:
     # Tables should be created with Alembic migrations
     # But if you don't want to use migrations, create
     # the tables un-commenting the next line
     from app.db.session import engine
 
     base.Base.metadata.create_all(bind=engine)
-    college = crud.college.create(
-        db=db, obj_in=schemas.CollegeCreate(name="init", code="AX")
-    )
+
+    if use_fakedata:
+        base.Base.metadata.drop_all(bind=engine)
+        base.Base.metadata.create_all(bind=engine)
+
+        college = crud.college.create(
+            db=db, obj_in=schemas.CollegeCreate(name="init", code="AX")
+        )
 
     # # Create Superuser
     # user = crud.user.get_by_email(db, email=settings.FIRST_SUPERUSER)
