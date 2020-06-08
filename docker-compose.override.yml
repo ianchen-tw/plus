@@ -1,4 +1,4 @@
-version: '3.3'
+version: '3.5'
 services:
     api-server:
         volumes:
@@ -17,6 +17,7 @@ services:
           
           # TODO: make use of this tag
           #- traefik.http.routers.api-server.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
+  
     pgadmin:
       ports:
         - "5050:5050"
@@ -47,8 +48,3 @@ services:
         - traefik.enable=true
         - traefik.http.routers.${STACK_NAME?Variable not set}-traefik-public-http.rule=Host(`${DOMAIN?Variable not set}`)
         - traefik.http.services.${STACK_NAME?Variable not set}-traefik-public.loadbalancer.server.port=80
-
-networks:
-    traefik-public:
-        # For local dev, we dont expect an external Traefik network
-        external: false

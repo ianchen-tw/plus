@@ -31,13 +31,15 @@ Happy coding!
 make up
 ```
 
-The serivices will be hosted on `localhost` in the background. see the ports defined below
+The serivices will be hosted on `localhost` in the background. see the ports defined below:
 
-|||
-|:-:|:-:|
-|service|port|
-|api-server|8888|
-|pgAdmin|5050|
+|Name|URL|
+|-:|:-|
+|api-server|[http://localhost:8888](http://localhost:8888)|
+|api-server openAPI spec|[http://localhost:8888/docs](http://localhost:8888/docs)|
+|traefik dashboard|[http://localhost:8090](http://localhost:8090)|
+|pgAdmin|[http://localhost:5050](http://localhost:5050)|
+
 
 Note: This would run our serer in the background, use `docker-compose up` to run it in the foreground.
 
@@ -70,3 +72,8 @@ make shell
 ```
 format.sh
 ```
+
+## MISC
+
+config files:
++ `.devcontainer/`: used in VSCode

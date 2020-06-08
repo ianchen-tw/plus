@@ -1,8 +1,15 @@
-version: '3.3'
+version: '3.5'
+
+networks:
+    traefik-public:
+        name: traefik-internal-network
+
 services:
     
     api-server:
         image: 'ianre657/plus-api-server:latest'
+        networks:
+            - traefik-public
         depends_on:
             - db
         env_file:
@@ -24,6 +31,8 @@ services:
 
     db:
         image: postgres:12
+        networks:
+            - traefik-public
         volumes:
             - app-db-data:/var/lib/postgresql/data/pgdata
         env_file:
@@ -65,6 +74,7 @@ services:
         networks:
             - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
             - default
+            - traefik-internal-network
         volumes:
             # Add Docker as a mounted volume, so that Traefik can read the labels of other services
             - /var/run/docker.sock:/var/run/docker.sock
@@ -142,8 +152,3 @@ services:
 
 volumes:
     app-db-data:
-
-networks:
-    traefik-public:
-        # TODO: variablize this to run test scripts
-        external: 'false'

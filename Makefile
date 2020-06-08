@@ -9,5 +9,5 @@ up:
 down:
 	docker-compose down
 
-shell: up
+shell:
 	docker-compose exec api-server bash
