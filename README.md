@@ -40,7 +40,6 @@ The serivices will be hosted on `localhost` in the background. see the ports def
 |traefik dashboard|[http://localhost:8090](http://localhost:8090)|
 |pgAdmin|[http://localhost:5050](http://localhost:5050)|
 
-
 Note: This would run our serer in the background, use `docker-compose up` to run it in the foreground.
 
 ### Shutdown the development server
@@ -56,10 +55,13 @@ make down
 ```
 make shell
 ```
-2. run test with: (or `./scripts/test.sh`)
+2. run test with: (or `./scripts/.test.sh`)
+
 ```
-test.sh
+.test.sh
 ```
+
+> Here we use a dot(`.`) as a prefix for naming our scripts to prevent from name collision and utilize tab-completion feature
 
 ### Run Formatter
 
@@ -68,12 +70,14 @@ test.sh
 make shell
 ```
 
-2. run test with: (or `./scripts/format.sh`)
+2. run test with: (or `./scripts/.format.sh`)
 ```
-format.sh
+.format.sh
 ```
+
+> Here we use a dot(`.`) as a prefix for naming our scripts to prevent from name collision and utilize tab-completion feature
 
 ## MISC
 
 config files:
-+ `.devcontainer/`: used in VSCode
++ ~`.devcontainer/`: used in VSCode~
