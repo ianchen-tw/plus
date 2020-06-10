@@ -5,6 +5,9 @@ title: Introduction
 
 plus is a api service for students
 
-## Disclaimer
+:::caution
 
-this project is still in developing process. API is not stable.
+This project is still in developing process.
+
+Current API is not stable.
+:::
