@@ -28,4 +28,6 @@ Use `docker compose up` to start the project.
 
 Open your browser with `localhost:8888` to see the result.
 
-See `Development Flow`(wip), `Code of Conducts`(wip) for more information. 
+See [Development Flow][dev_flow], `Code of Conducts`(wip) for more information. 
+
+[dev_flow]: ./dev_flow
