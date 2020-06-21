@@ -7,7 +7,8 @@
 python3 app/hooks/backend_prestart.py
 
 
-# TODO: run migrations
+# Run migrations
+alembic upgrade head
 
-
+# TODO: since we will drop and recreate all data after migration, it does not utilize migrations at all.
 python3 app/hooks/initial_data.py
