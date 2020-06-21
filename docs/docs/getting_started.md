@@ -30,4 +30,4 @@ Open your browser with `localhost:8888` to see the result.
 
 See [Development Flow][dev_flow], `Code of Conducts`(wip) for more information. 
 
-[dev_flow]: ./dev_flow
+[dev_flow]: ./dev_flow.md
