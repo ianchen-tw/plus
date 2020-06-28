@@ -21,13 +21,23 @@ For gerenating docs, checkout [Dependencies for writing docs][2].
 
 ## Install dependecies via Docker
 
+### Install docker and docker-compose
+
 + [Docker][docker-link].
 + [Docker Compose][dockercompose-link].
 
 [docker-link]: https://www.docker.com/get-started
 [dockercompose-link]: https://docs.docker.com/compose/install/
 
-After installing `docker` and `docker-compose`, build your own docker image with:
+### Setup configuration files (`.env` file)
+
+We use a `.env` file to store global variables for all of our dockerfiles.
+
+Use `./onboarding.sh` to propagate those files.
+
+### Build docker image
+
+After installing `docker` and `docker-compose` and setting up `.env` file, build your own docker image with:
 
 ```sh
 docker-compose build
