@@ -13,18 +13,10 @@ git clone https://github.com/ianre657/plus.git
 
 Follow [Install Dependecies](./install_deps)
 
-## step3. Setup configuration files
 
-### `.env` file
+## step3. Start Developing
 
-We use a `.env` file to store global variables for all of our dockerfiles.
-
-Use `./onboarding.sh` to propagate those files.
-
-
-## step4. Start Developing
-
-Use `docker compose up` to start the project.
+Use `docker-compose up` to start the project.
 
 Open your browser with `localhost:8888` to see the result.
 
