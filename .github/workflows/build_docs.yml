@@ -2,13 +2,15 @@ name: docs
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
     paths:
-      - 'docs/**'
+      - "docs/**"
+      - "./github/workflows/**"
+
   pull_request:
-    branches: [ master ]
+    branches: [master]
     paths:
-      - 'docs/**'
+      - "docs/**"
 
 jobs:
   build:
@@ -16,46 +18,47 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
-      with:
-          node-version: '12.x'
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "12.x"
 
-    - name: Install dependencies for docs
-      run: yarn install
-      working-directory: ./docs
-
-    - name: Build docs site
-      run: yarn build
-      working-directory: ./docs
-    
+      - name: Install and build
+        run: |
+          yarn install
+          yarn build
+        working-directory: ./docs
 
   gh-release:
-      if: github.event_name == 'push'
-      runs-on: ubuntu-18.04
-      steps:
-        - uses: actions/checkout@v2
-        - uses: webfactory/ssh-agent@v0.4.0
-          with:
-            ssh-private-key: ${{ secrets.GH_PAGES_DEPLOY }}
-            ssh-auth-sock: /tmp/ssh_agent.sock
-            
-        - uses: actions/setup-node@v1
-          with:
-            node-version: '12.x'
-        - name: Release to GitHub Pages
-          env:
-            USE_SSH: true
-            GIT_USER: git
-          working-directory: ./docs
-          run: |
-              git config --global user.email "actions@gihub.com"
-              git config --global user.name "gh-actions"
-              if [ -e yarn.lock ]; then
-              yarn install --frozen-lockfile
-              elif [ -e package-lock.json ]; then
-              npm ci
-              else
-              npm i
-              fi
-              npx docusaurus deploy
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "12.x"
+
+      - name: Install SSH Client 🔑
+        uses: webfactory/ssh-agent@v0.4.0
+        with:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          ssh-private-key: ${{ secrets.GH_PAGES_DEPLOY }}
+
+      - name: run build
+        working-directory: ./docs
+        run: |
+          yarn install
+          yarn run build
+          cp -r build ..
+
+      # - name: quit
+      #   run: echo good && exit 1
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@3.5.6
+        with:
+          ssh: true
+          BRANCH: gh-pages # The branch the action should deploy to.
+          FOLDER: build # The folder the action should deploy.
