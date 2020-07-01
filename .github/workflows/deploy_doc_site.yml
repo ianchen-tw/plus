@@ -1,4 +1,4 @@
-name: docs
+name: deploy doc site
 
 on:
   push:
@@ -7,30 +7,8 @@ on:
       - "docs/**"
       - "./github/workflows/**"
 
-  pull_request:
-    branches: [master]
-    paths:
-      - "docs/**"
-
 jobs:
-  build:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: "12.x"
-
-      - name: Install and build
-        run: |
-          yarn install
-          yarn build
-        working-directory: ./docs
-
   gh-release:
-    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -46,15 +24,12 @@ jobs:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
           ssh-private-key: ${{ secrets.GH_PAGES_DEPLOY }}
 
-      - name: run build
+      - name: Build 🔨
         working-directory: ./docs
         run: |
           yarn install
           yarn run build
           cp -r build ..
-
-      # - name: quit
-      #   run: echo good && exit 1
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@3.5.6
