@@ -1,4 +1,4 @@
-name: test build docs
+name: Build DocsSite
 
 on:
   push:
@@ -6,7 +6,8 @@ on:
       - gh-pages
     paths:
       - "docs/**"
-      - "./github/workflows/test_build_docs.yml"
+      - ".github/workflows/test_build_docs.yml"
+  pull_request:
 
 jobs:
   build:
