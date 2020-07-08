@@ -23,11 +23,11 @@ services:
         build:
             context: ./plus
             dockerfile: plus.dockerfile
-        deploy:
-            labels:
-                - traefik.enable=true
-                - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
-                - traefik.http.routers.api-server.rule= PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
+        # deploy:
+        #     labels:
+        #         - traefik.enable=true
+        #         - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
+        #         - traefik.http.routers.api-server.rule= PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
 
     db:
         image: postgres:12
@@ -39,10 +39,10 @@ services:
             - .env
         environment:
             - PGDATA=/var/lib/postgresql/data/pgdata
-        deploy:
-            placement:
-                constraints:
-                - node.labels.${STACK_NAME?Variable not set}.app-db-data == true
+        # deploy:
+        #     placement:
+        #         constraints:
+        #         - node.labels.${STACK_NAME?Variable not set}.app-db-data == true
 
     pgadmin:
         image: dpage/pgadmin4
@@ -53,7 +53,6 @@ services:
             - db
         env_file:
         - .env
-        deploy:
         labels:
             - traefik.enable=true
             - traefik.docker.network=${TRAEFIK_PUBLIC_NETWORK?Variable not set}
