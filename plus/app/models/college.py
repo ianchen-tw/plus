@@ -1,10 +1,7 @@
-from datetime import datetime
-
-from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
+from sqlalchemy import Column, DateTime, Integer, String
 
 # from sqlalchemy.schema import FetchedValue
 from sqlalchemy.sql import func
-from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base
 

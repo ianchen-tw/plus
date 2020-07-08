@@ -1,10 +1,5 @@
 from typing import Dict
 
-from fastapi.testclient import TestClient
-from app.main import server
-
-from app.tests.conftest import client
-
 
 def filter_dict(template: Dict, src: Dict):
     """

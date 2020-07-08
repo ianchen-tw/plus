@@ -1,12 +1,8 @@
 import logging
 
-from fastapi import (
-    FastAPI,
-    Query,
-)
-from app.api.main_router import main_router
-from pydantic import BaseModel
+from fastapi import FastAPI
 
+from app.api.main_router import main_router
 from app.core.config import settings
 
 logging.basicConfig(level=logging.INFO)
