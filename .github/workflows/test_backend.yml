@@ -1,0 +1,25 @@
+name: Test backend
+
+on:
+  push:
+    branches-ignore:
+      - gh-pages
+    paths-ignore:
+      - "docs/**"
+  pull_request:
+    branches-ignore:
+        - gh-pages
+    paths-ignore:
+      - "docs/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build the stack
+        run: |
+          ./onboarding.sh
+          docker-compose up -d
+      - name: Test
+        run: docker-compose exec -T api-server bash .test.sh
