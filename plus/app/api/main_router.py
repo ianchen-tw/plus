@@ -1,8 +1,8 @@
 import logging
 
-from fastapi import APIRouter
-from fastapi import status
-from app.api.endpoints import users, college
+from fastapi import APIRouter, status
+
+from app.api.endpoints import college, users
 
 logger = logging.getLogger(__name__)
 

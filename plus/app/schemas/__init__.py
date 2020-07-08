@@ -1,1 +1,1 @@
-from .college import College, CollegeCreate, CollegeUpdate, CollegeInDB
+from .college import College, CollegeCreate, CollegeInDB, CollegeUpdate

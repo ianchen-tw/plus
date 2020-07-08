@@ -1,11 +1,10 @@
 from typing import Any, List
 
-from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
 
 from app import crud, schemas
 from app.api import depends
-
 
 router = APIRouter()
 

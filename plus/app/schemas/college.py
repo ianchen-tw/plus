@@ -1,4 +1,3 @@
-from typing import Optional
 from datetime import datetime
 from typing import Optional
 
@@ -13,8 +12,6 @@ class CollegeBase(BaseModel):
 
 class CollegeCreate(CollegeBase):
     """Class for validating create college request"""
-
-    pass
 
 
 class CollegeUpdate(CollegeBase):

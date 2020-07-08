@@ -1,15 +1,13 @@
 # Conftest: test configurations
 #   Setup some common Fixtures
 
-from typing import Dict, Generator
+from typing import Generator
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy.orm import Session
 
-
-from app.tests.utils.session import TestingSessionLocal
 from app.main import server
+from app.tests.utils.session import TestingSessionLocal
 
 
 @pytest.fixture(scope="session")
