@@ -32,7 +32,8 @@
 
 		// editor
 		"shardulm94.trailing-spaces",
-		"visualstudioexptteam.vscodeintellicode"
+		"visualstudioexptteam.vscodeintellicode",
+		"be5invis.toml"
 	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
