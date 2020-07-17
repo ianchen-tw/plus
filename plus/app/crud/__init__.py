@@ -1,4 +1,6 @@
 from .crud_college import college
+from .crud_course import course
+from .crud_course_timeslot import course_timeslot
 
 # For a new basic set of CRUD operations you could just do
 
