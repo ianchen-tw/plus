@@ -1,28 +1,21 @@
-import os
-
 from fastapi import APIRouter
 
-from app.core import OAuth2
+from app.core.auth import oauth_nctu
 
 router = APIRouter()
-
-nctu_oauth = OAuth2.OAuth2(
-    client_id=os.getenv("NCTU_CLIENT_ID"),
-    client_secret=os.getenv("NCTU_CLIENT_SECRET"),
-    auth_url=os.getenv("NCTU_AUTH_URL"),
-    token_url=os.getenv("NCTU_TOKEN_URL"),
-    data_url=os.getenv("NCTU_DATA_URL"),
-    redirect_url=os.getenv("NCTU_REDIRECT_URL"),
-)
 
 
 @router.get("/nctu")
 def user_auth():
-    return nctu_oauth.user_auth()
+    return oauth_nctu.user_auth()
 
 
 @router.get("/nctu/redirect")
 def user_data(code: str):
-    res = nctu_oauth.user_data(code)
+    """User would be redirect to this page from auth server
+    take their authorizatoin code to us
+    and we could verify his/her data by this code
+    """
+    res = oauth_nctu.user_data(code)
     print(res)
     return "Login to nctu oauth succeed!"
