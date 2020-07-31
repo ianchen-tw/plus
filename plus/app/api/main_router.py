@@ -2,7 +2,7 @@ import logging
 
 from fastapi import APIRouter, status
 
-from app.api.endpoints import college, course, course_timeslot, users, auth
+from app.api.endpoints import auth, college, course, course_timeslot, users
 
 logger = logging.getLogger(__name__)
 
