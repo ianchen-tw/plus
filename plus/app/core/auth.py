@@ -8,9 +8,9 @@ from app.core.config import settings
 
 class AuthServerController:
     def fetch_user_token(self, token_url: str, post_data: Dict):
-        return requests.post(self.token_url, data=post_data)
+        return requests.post(token_url, data=post_data)
 
-    def fetch_user_data(self, data_url, headers):
+    def fetch_user_profile(self, data_url: str, headers: Dict):
         return requests.get(data_url, headers=headers)
 
 
@@ -43,13 +43,11 @@ class OAuth2:
         """
         return RedirectResponse(self.auth_url)
 
-    # TODO: add type hint
-    def fetch_user_data(self, code: str):
-        access_token = self.__get_user_token(code)
-        data = self.__get_user_data(access_token)
+    def fetch_user_profile(self, code: str) -> Dict:
+        access_token = self._get_user_token(code)
+        data = self._get_user_profile(access_token)
         return data
 
-    # TODO: add type hint
     def _get_user_token(self, code) -> str:
         """redirect_url catch code and use it to redeem the token
         """
@@ -64,10 +62,9 @@ class OAuth2:
         print(f"res {res}")
         return res.get("access_token")
 
-    # TODO: add type hint
-    def _get_user_data(self, access_token: str):
+    def _get_user_profile(self, access_token: str) -> Dict:
         headers = {"Authorization": f"Bearer {access_token}"}
-        res = self.auth_server.fetch_user_data(self.data_url, headers).json()
+        res = self.auth_server.fetch_user_profile(self.data_url, headers).json()
         return res
 
 
