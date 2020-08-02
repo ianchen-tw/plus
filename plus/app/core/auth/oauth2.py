@@ -1,17 +1,8 @@
 from typing import Dict
 
-import requests
 from fastapi.responses import RedirectResponse
 
-from app.core.config import settings
-
-
-class AuthServerController:
-    def fetch_user_token(self, token_url: str, post_data: Dict):
-        return requests.post(token_url, data=post_data)
-
-    def fetch_user_profile(self, data_url: str, headers: Dict):
-        return requests.get(data_url, headers=headers)
+from .remote import AuthServerController
 
 
 class OAuth2:
@@ -66,6 +57,3 @@ class OAuth2:
         headers = {"Authorization": f"Bearer {access_token}"}
         res = self.auth_server.fetch_user_profile(self.data_url, headers).json()
         return res
-
-
-oauth_nctu = OAuth2(**settings.OAUTH_NCTU.dict())

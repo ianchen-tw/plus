@@ -1,5 +1,4 @@
 from fastapi import APIRouter
-from fastapi.responses import RedirectResponse
 
 from app.core.auth import oauth_nctu
 

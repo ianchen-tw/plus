@@ -47,7 +47,9 @@ def test_NCTU_get_user_token(client, mocker):
         }
         return MockedResponse(res)
 
-    mocker.patch("app.core.auth.AuthServerController.fetch_user_token", mock_fetch_token)
+    mocker.patch(
+        "app.core.auth.remote.AuthServerController.fetch_user_token", mock_fetch_token
+    )
     oauth = gen_oauth2(prefix="NCTU_OAUTH")
     token = oauth._get_user_token(code="TEST_USER_CODE")
 
@@ -68,7 +70,7 @@ def test_NCTU_get_user_profile(client, mocker):
         return MockedResponse(res)
 
     mocker.patch(
-        "app.core.auth.AuthServerController.fetch_user_profile", mock_fetch_profile
+        "app.core.auth.remote.AuthServerController.fetch_user_profile", mock_fetch_profile
     )
     oauth = gen_oauth2(prefix="NCTU_OAUTH")
     data = oauth._get_user_profile(access_token="TEST_ACCESS_TOKEN")
