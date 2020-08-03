@@ -9,17 +9,37 @@ title: Getting Started
 git clone https://github.com/ianre657/plus.git
 ```
 
-## step2. Install dependencies
+## step2. Setup configuration files (`.env` file)
 
-Follow [Install Dependecies](./install_deps.md)
+We use a `.env` file to store global variables for all of our dockerfiles.
+
+Use `./onboarding.sh` to propagate those files.
+
+## step3. Install dependencies
+
+### Install docker and docker-compose
+
++ [Docker][docker-link].
++ [Docker Compose][dockercompose-link].
+
+[docker-link]: https://www.docker.com/get-started
+[dockercompose-link]: https://docs.docker.com/compose/install/
+
+### Build docker image
+
+After installing `docker` and `docker-compose` and setting up `.env` file, build your own docker image with:
+
+```sh
+docker-compose build
+```
 
 
-## step3. Start Developing
+## step4. Start Developing
 
 Use `docker-compose up` to start the project.
 
 Open your browser with `localhost:8888` to see the result.
 
-See [Development Flow][dev_flow], `Code of Conducts`(wip) for more information.
+See [Develop Inside Container][dev_container], `Code of Conducts`(wip) for more information.
 
-[dev_flow]: ./dev_flow.md
+[dev_container]: ./dev_container.md

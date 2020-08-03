@@ -1,34 +1,7 @@
 ---
-id: dev_flow
-title: Development Flow
+id: dev_container
+title: Develop Inside Container
 ---
-
-## Choose a Good Editor
-wip
-
-### VSCode
-
-+ Plugins to Install
-     + Docker
-     + Remote-Containers
-     + Visual Studio IntelliCode
-     + Python
-     + Magic Python
-
-### PyCharm
-
-+ Install PyCharm:
-     + install dependency by `cd plus && poetry install`
-     + install [poetry plugin][poetry-plugin-link] from marketplace
-          + select virtual environment from settings
-
-[poetry-plugin-link]: https://github.com/koxudaxi/poetry-pycharm-plugin
-
-:::info
-If you want to develop with docker-compose inside PyCharm, a [Pro](https://www.jetbrains.com/community/education/#students) version is required.
-:::
-
-## Develop in docker-container
 
 ### Run the development server
 
