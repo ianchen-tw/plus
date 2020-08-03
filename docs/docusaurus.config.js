@@ -1,63 +1,63 @@
 module.exports = {
-  title: 'Plus',
-  tagline: 'API Server for students',
-  url: 'https://ianre657.github.io/plus/',
-  baseUrl: '/plus/',
-  favicon: 'img/favicon.ico',
-  organizationName: 'ianre657', // Usually your GitHub org/user name.
-  projectName: 'plus', // Usually your repo name.
+  title: "Plus",
+  tagline: "API Server for students",
+  url: "https://ianre657.github.io/plus/",
+  baseUrl: "/plus/",
+  favicon: "img/favicon.ico",
+  organizationName: "ianre657", // Usually your GitHub org/user name.
+  projectName: "plus", // Usually your repo name.
   themeConfig: {
     navbar: {
-      title: 'plus',
+      title: "plus",
       logo: {
-        alt: 'plus logo',
-        src: 'img/nctuplus_logo_22.png',
+        alt: "plus logo",
+        src: "img/nctuplus_logo_22.png",
       },
       links: [
         {
-          to: 'docs/intro',
-          activeBasePath: 'docs',
-          label: 'Docs',
-          position: 'left',
+          to: "docs/intro",
+          activeBasePath: "docs",
+          label: "Docs",
+          position: "left",
         },
         {
-          href: 'https://github.com/ianre657/plus',
-          label: 'GitHub',
-          position: 'right',
+          href: "https://github.com/ianre657/plus",
+          label: "GitHub",
+          position: "right",
         },
       ],
     },
     footer: {
-      style: 'dark',
+      style: "dark",
       links: [
         {
-          title: 'Getting Started',
+          title: "Getting Started",
           items: [
             {
-              label: 'Installation',
-              to: 'docs/install_deps',
+              label: "Installation",
+              to: "docs/getting_started",
             },
           ],
         },
         {
-          title: 'Community',
+          title: "Community",
           items: [
             // {
             //   label: 'Discord',
             //   href: 'https://discordapp.com/invite/docusaurus',
             // },
             {
-              label: 'Github Issue Tracker',
-              href: 'https://github.com/ianre657/plus/issues',
+              label: "Github Issue Tracker",
+              href: "https://github.com/ianre657/plus/issues",
             },
           ],
         },
         {
-          title: 'More',
-          items:[
+          title: "More",
+          items: [
             {
-              label: 'GitHub',
-              href: 'https://github.com/ianre657/plus',
+              label: "GitHub",
+              href: "https://github.com/ianre657/plus",
             },
           ],
         },
@@ -67,16 +67,15 @@ module.exports = {
   },
   presets: [
     [
-      '@docusaurus/preset-classic',
+      "@docusaurus/preset-classic",
       {
         docs: {
           // It is recommended to set document id as docs home page (`docs/` path).
-          homePageId: 'docs/getting_started',
-          sidebarPath: require.resolve('./sidebars.js'),
+          homePageId: "docs/getting_started",
+          sidebarPath: require.resolve("./sidebars.js"),
           // Please change this to your repo.
-          editUrl:
-            'https://github.com/ianre657/plus/edit/master/'
-            // 'https://github.com/facebook/docusaurus/edit/master/website/',
+          editUrl: "https://github.com/ianre657/plus/edit/master/",
+          // 'https://github.com/facebook/docusaurus/edit/master/website/',
         },
         // blog: {
         //   showReadingTime: true,
@@ -85,9 +84,9 @@ module.exports = {
         //     'https://github.com/facebook/docusaurus/edit/master/website/blog/',
         // },
         theme: {
-          customCss: require.resolve('./src/css/custom.css'),
+          customCss: require.resolve("./src/css/custom.css"),
         },
       },
     ],
   ],
-};
+}
