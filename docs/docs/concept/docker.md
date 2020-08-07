@@ -76,7 +76,11 @@ api-server:
 
 ## `plus` 的建置到啟動解析
 
-```dockerfile
+回頭看 `plus/plus.dockerfile` ，我們來追蹤一下 `plus` 的啟動過程:
+
+``` dockerfile
+# plus/plus.dockerfile
+
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.7
 
 # Install Poetry
@@ -94,5 +98,51 @@ RUN poetry install --no-root
 COPY . /app
 
 ENV PATH="/app/scripts/:${PATH}"
+```
+
+在這個檔案我們主要只做三件事情：
+
+1. 延伸 `FROM tiangolo/uvicorn-gunicorn-fastapi:python3.7`
+2. 在 container 中安裝我們的需要的 python 套件
+3. 在虛擬機的 shell 預設的指令搜尋路應中載入 `.format.sh` ， `.test.sh` 。(位於 `plus/script` 中)
+
+後兩項的內容並看不出來我們的系統是如何啟動的，其實關鍵在 1. 中:
+
+`tiangolo/uvicorn-gunicorn-fastapi:python3.7` 的 docker [文件][uvi-fastapi-docs] 裡有提到:
+
+> These are the environment variables that you can set in the container to configure it and their default values:
+> + MODULE_NAME
+>
+> The Python "module" (file) to be imported by Gunicorn, this module would contain the actual application in a variable
+> + VARIABLE_NAME
+>
+> The variable inside of the Python module that contains the FastAPI application.
+
+[uvi-fastapi-docs]: https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker#advanced-usage
+
+而我們的變數是直接設定在  `docker-compose.yml` 之中:
+
+``` yml
+# docker-compose.yml
+api-server:
+  image: 'ianre657/plus-api-server:latest'
+  env_file:
+
+      - .env
+
+  environment:
+      # see https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker for reference
+
+      - VARIABLE_NAME=server
+      - MODULE_NAME=app.main
 
 ```
+
+所以 plus 的專案進入點就會是  `plus/app/main.py` 的 `server` 物件。這個物件會被直接當作伺服器的物件來執行。
+
+### Prestart scripts
+
+除了伺服器的進入點外， `plus` 也會有在整個伺服器開始之前會運作的腳本。在我們這邊則會是 `plus/prestart.sh` 。這個內容也記在 [文件][prestart_sh] 之中。
+
+[uvi-fastapi-docs]: https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker#advanced-usage
+[prestart_sh]: https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker#custom-appprestartsh
