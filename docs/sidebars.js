@@ -10,6 +10,10 @@ module.exports = {
       "ide_pycharm",
     ],
 
+    "Concepts": [
+      "concept/docker_concept"
+    ],
+
     "Write Docs": [
       "writeDocs/docs_overview",
       "writeDocs/docs_build",
