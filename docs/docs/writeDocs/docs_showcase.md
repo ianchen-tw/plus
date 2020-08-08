@@ -5,7 +5,7 @@ title: Docs Showcase
 
 ## Link to other pages
 
-This is a link to [another document.](config.md) This is a link to an [external page.](http://www.example.com/)
+This is a link to [another document.](docs_build.md) This is a link to an [external page.](http://www.example.com/)
 
 
 ## MDX
@@ -82,8 +82,6 @@ Strikethrough uses two tildes. ~~Scratch this.~~
 [I'm an inline-style link with title](https://www.google.com/ "Google's Homepage")
 
 [I'm a reference-style link][arbitrary case-insensitive reference text]
-
-[I'm a relative reference to a repository file](../blob/master/LICENSE)
 
 [You can use numbers for reference-style link definitions][1]
 
