@@ -34,7 +34,7 @@ class OAuth2:
         """
         return RedirectResponse(self.auth_url)
 
-    def fetch_user_profile(self, code: str) -> Dict:
+    def fetch_user_profile(self, code: str) -> str:
         access_token = self._get_user_token(code)
         data = self._get_user_profile(access_token)
         return data
