@@ -54,13 +54,10 @@ class CourseTimeslotInDBBase(CourseTimeslotBase):
 
 # Propeties to return to client
 class CourseTimeslot(CourseTimeslotBase):
-    id: int
-
     class Config:
         orm_mode = True
         schema_extra = {
             "example": {
-                "id": 3,
                 "code": "A",
                 "timespan": "7:00-7:50",
                 "weekday": "Fri",

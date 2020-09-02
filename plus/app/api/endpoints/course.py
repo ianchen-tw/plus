@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from app import crud, schemas
 from app.api import depends
+from app.core import timeslot_parser
 
 router = APIRouter()
 
@@ -25,63 +26,88 @@ def create_course(
 ) -> Any:
     """
     Create Course
-
-    @timeslot_ids: List of timeslot ids in the database, use /timeslot/translate to get these ids.
     """
-    # Retrieve corresponding timeslot objects
-    timeslot_ids = course_in.timeslot_ids
-    timeslots = crud.course_timeslot.get_multi_by_id(db=db, ids=timeslot_ids)
+    # extract base information inside a course
+    base_info_of_new_course = schemas.CourseCreate(**dict(course_in))
 
-    num_timeslot_required, num_timeslot_actual = len(set(timeslot_ids)), len(timeslots)
-    if num_timeslot_required != num_timeslot_actual:
-        missing = set(timeslot_ids) - set([t.id for t in timeslots])
-        raise HTTPException(status_code=404, detail=f"Timeslots not exist: {missing}")
+    course_orm_obj = crud.course.find_by_permanent_id(
+        db, pid=base_info_of_new_course.permanent_id
+    )
 
-    # If there exists one course with the same permanent id but different info
-    #   response with error
-    # TODO: implement this
+    if course_orm_obj:
+        # if the same: return the same object
+        in_db = schemas.CourseInDB.from_orm(course_orm_obj)
+        converted = schemas.CourseCreate(**dict(in_db))
+        if base_info_of_new_course == converted:
+            return course_orm_obj
 
-    # Create the whole object
-    course_to_create = {**course_in.dict(exclude={"timeslot_ids"})}
-    course = crud.course.create(db=db, obj_in=course_to_create, timeslots=timeslots)
+        # else report error
+        # TODO: compare and show the data inside database
+        raise HTTPException(
+            status_code=409,
+            detail="Permanent_id have been used with different course content, use /course/update instead.",
+        )
+    else:
+        # course_in.timeslots is actually a timeslot_exp but not timeslots
+        timeslot_exp = course_in.timeslots
+        timeslots_internal = timeslot_parser.parse_timeslots(exp=timeslot_exp)
+        course = crud.course.create(
+            db=db, obj_in=base_info_of_new_course, timeslots_internal=timeslots_internal
+        )
+        return course
+
+
+@router.get("/{course_id}", response_model=schemas.Course)
+def read_course_information(
+    *, db: Session = Depends(depends.get_db), course_id: int,
+) -> Any:
+    """
+    read course info
+    """
+    course = crud.course.get(db, id=course_id)
+    if not course:
+        raise HTTPException(
+            status_code=404,
+            detail="The course with this id does not exist in the system",
+        )
     return course
 
 
-# @router.get("/{course_id}", response_model=schemas.Course)
-# def read_course_information(
-#     *, db: Session = Depends(depends.get_db), course_id: int,
-# ) -> Any:
-#     """
-#     read course info
-#     """
-#     course = crud.course.get(db, id=course_id)
-#     if not course:
-#         raise HTTPException(
-#             status_code=404,
-#             detail="The course with this id does not exist in the system",
-#         )
-#     return course
+@router.patch("/{course_id}", response_model=schemas.Course)
+def update_course(
+    *,
+    db: Session = Depends(depends.get_db),
+    course_id: int,
+    course_in: schemas.CourseUpdateAPI,
+) -> Any:
+    """
+    Update fields of a course object.
 
+    Provide partial fields would partially update a course object
+    """
 
-# @router.patch("/{course_id}", response_model=schemas.Course)
-# def update_course(
-#     *,
-#     db: Session = Depends(depends.get_db),
-#     course_id: int,
-#     course_in: schemas.CourseUpdateAPI,
-# ) -> Any:
-#     """
-#     Update fields of a course object.
-#     """
+    course_orm_obj = crud.course.get(db, id=course_id)
+    if not course_orm_obj:
+        raise HTTPException(
+            status_code=404,
+            detail="The course with this name does not exist in the system",
+        )
 
-#     course = crud.course.get(db, id=course_in.id)
-#     if not course:
-#         raise HTTPException(
-#             status_code=404,
-#             detail="The course with this name does not exist in the system",
-#         )
-#     course = crud.course.update(db, db_obj=course, obj_in=course_in)
-#     return course
+    provided_timeslot_exp = course_in.timeslots
+    provided_timeslots_internal = []
+    if provided_timeslot_exp != None:
+        provided_timeslots_internal = timeslot_parser.parse_timeslots(
+            exp=provided_timeslot_exp
+        )
+
+    course_update = schemas.CourseUpdate(**dict(course_in))
+    course = crud.course.update(
+        db=db,
+        course=course_orm_obj,
+        obj_in=course_update,
+        new_timeslots_internal=provided_timeslots_internal,
+    )
+    return course
 
 
 @router.delete("/{course_id}", response_model=schemas.Course)

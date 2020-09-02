@@ -1,11 +1,10 @@
 import enum
 
-from sqlalchemy import Column, DateTime, Enum, Integer, String
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from app.db.base_class import Base
-from .course import course_timeslot_relation
 
 
 class WeekDay(enum.Enum):
@@ -38,12 +37,13 @@ class CourseTimeslot(Base):
     create_at = Column(DateTime, nullable=False, default=func.now())
     update_at = Column(DateTime, nullable=False, default=func.now(), onupdate=func.now())
 
-    courses = relationship(
-        "Course", secondary=course_timeslot_relation, back_populates="timeslots"
-    )
-
     # general info
     code = Column(String, nullable=False)  # may duplicate
     timespan = Column(String, nullable=False)  # e.g. "8:00-8:50"
     weekday = Column(Enum(WeekDay), nullable=False)
     kind = Column(Enum(TimeSlotKind), nullable=False)
+
+    # Relation
+    # A CourseTimeslot belongs to a single course
+    course_id = Column(Integer, ForeignKey("course.id", ondelete="CASCADE"))
+    course = relationship("Course", back_populates="timeslots")

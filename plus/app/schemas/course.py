@@ -1,9 +1,10 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel
 
-from .course_timeslot import CourseTimeslotInDB
+from .course_timeslot import CourseTimeslot
+from .timeslot_exp import TimeSlotExp
 
 
 # Shared properties
@@ -26,10 +27,25 @@ class CourseBase(BaseModel):
         }
 
 
-class CourseCreateAPI(CourseBase):
+# TODO: verify the usage of this schema
+class CourseCreate(CourseBase):
     """Class for validating create Course request"""
 
-    timeslot_ids: List[int]
+
+class CourseUpdate(CourseBase):
+    """Class for update Course """
+
+    permanent_id: Optional[str] = None
+    credit: Optional[int] = None
+    hours: Optional[int] = None
+    semester: Optional[str] = None
+    teacher: Optional[str] = None
+
+
+class CourseAPI(CourseBase):
+    """ Course schema expose to API level"""
+
+    timeslots: TimeSlotExp
 
     class Config:
         schema_extra = {
@@ -39,23 +55,24 @@ class CourseCreateAPI(CourseBase):
                 "hours": 3,
                 "semester": "108A",
                 "teacher": "張書銘",
-                "timeslot_ids": [2, 5, 19],
+                "timeslots": {"kind": "nctu", "value": "2AB5CD"},
             }
         }
 
 
-class CourseCreate(CourseBase):
+class CourseCreateAPI(CourseAPI):
     """Class for validating create Course request"""
 
 
-class CourseUpdate(CourseBase):
-    """Class for update Course """
-
-
-class CourseUpdateAPI(CourseBase):
+class CourseUpdateAPI(CourseAPI):
     """Class for validating update Course request"""
 
-    timeslot_ids: List[int]
+    permanent_id: Optional[str] = None
+    credit: Optional[int] = None
+    hours: Optional[int] = None
+    semester: Optional[str] = None
+    teacher: Optional[str] = None
+    timeslots: Optional[TimeSlotExp] = None
 
 
 # Properties shared by models stored in DB
@@ -70,9 +87,13 @@ class CourseInDBBase(CourseBase):
 
 # Propeties to return to client
 class Course(CourseInDBBase):
-    timeslots: List[CourseTimeslotInDB]
+    timeslots: List[CourseTimeslot]
 
 
 # Properties stored in DB
 class CourseInDB(CourseInDBBase):
     pass
+
+
+class CourseWithTimeslotsInDB(CourseInDBBase):
+    timeslots: List[CourseTimeslot]
