@@ -18,53 +18,70 @@ def get_list_of_courses(
     return courses
 
 
+# TODO: add log events
 @router.post("/", response_model=schemas.Course)
 def create_course(
-    *, db: Session = Depends(depends.get_db), course: schemas.CourseCreate,
+    *, db: Session = Depends(depends.get_db), course_in: schemas.CourseCreateAPI,
 ) -> Any:
     """
     Create Course
-    """
-    c = crud.course.create(db=db, obj_in=course)
-    return c
 
+    @timeslot_ids: List of timeslot ids in the database, use /timeslot/translate to get these ids.
+    """
+    # Retrieve corresponding timeslot objects
+    timeslot_ids = course_in.timeslot_ids
+    timeslots = crud.course_timeslot.get_multi_by_id(db=db, ids=timeslot_ids)
 
-@router.get("/{course_id}", response_model=schemas.Course)
-def read_course_information(
-    *, db: Session = Depends(depends.get_db), course_id: int,
-) -> Any:
-    """
-    read course info
-    """
-    course = crud.course.get(db, id=course_id)
-    if not course:
-        raise HTTPException(
-            status_code=404,
-            detail="The course with this id does not exist in the system",
-        )
+    num_timeslot_required, num_timeslot_actual = len(set(timeslot_ids)), len(timeslots)
+    if num_timeslot_required != num_timeslot_actual:
+        missing = set(timeslot_ids) - set([t.id for t in timeslots])
+        raise HTTPException(status_code=404, detail=f"Timeslots not exist: {missing}")
+
+    # If there exists one course with the same permanent id but different info
+    #   response with error
+    # TODO: implement this
+
+    # Create the whole object
+    course_to_create = {**course_in.dict(exclude={"timeslot_ids"})}
+    course = crud.course.create(db=db, obj_in=course_to_create, timeslots=timeslots)
     return course
 
 
-@router.patch("/{course_id}", response_model=schemas.Course)
-def update_course(
-    *,
-    db: Session = Depends(depends.get_db),
-    course_id: int,
-    course_in: schemas.CourseUpdate,
-) -> Any:
-    """
-    Update fields of a course object.
-    Will only update the field you prvide.
-    """
+# @router.get("/{course_id}", response_model=schemas.Course)
+# def read_course_information(
+#     *, db: Session = Depends(depends.get_db), course_id: int,
+# ) -> Any:
+#     """
+#     read course info
+#     """
+#     course = crud.course.get(db, id=course_id)
+#     if not course:
+#         raise HTTPException(
+#             status_code=404,
+#             detail="The course with this id does not exist in the system",
+#         )
+#     return course
 
-    course = crud.course.get(db, id=course_id)
-    if not course:
-        raise HTTPException(
-            status_code=404,
-            detail="The course with this name does not exist in the system",
-        )
-    course = crud.course.update(db, db_obj=course, obj_in=course_in)
-    return course
+
+# @router.patch("/{course_id}", response_model=schemas.Course)
+# def update_course(
+#     *,
+#     db: Session = Depends(depends.get_db),
+#     course_id: int,
+#     course_in: schemas.CourseUpdateAPI,
+# ) -> Any:
+#     """
+#     Update fields of a course object.
+#     """
+
+#     course = crud.course.get(db, id=course_in.id)
+#     if not course:
+#         raise HTTPException(
+#             status_code=404,
+#             detail="The course with this name does not exist in the system",
+#         )
+#     course = crud.course.update(db, db_obj=course, obj_in=course_in)
+#     return course
 
 
 @router.delete("/{course_id}", response_model=schemas.Course)

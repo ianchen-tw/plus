@@ -1,6 +1,5 @@
 from faker import Faker
 
-# TODO: move this file to testutil
 Faker.seed(1234)
 
 

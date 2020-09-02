@@ -5,6 +5,8 @@ from sqlalchemy.orm import Session
 
 from app import crud, schemas
 from app.api import depends
+from app.core import time_slot_parser_nctu
+from app.models.course_timeslot import TimeSlotKind
 
 router = APIRouter()
 
@@ -24,9 +26,31 @@ def create_timeslot(
 ) -> Any:
     """
     Create CourseTimeslot
+    If a timeslot have been created before, will not create object but return the existing one.
     """
-    ts = crud.course_timeslot.create(db=db, obj_in=timeslot)
-    return ts
+    result = None
+    existing = crud.course_timeslot.find_timeslot(db=db, timeslot=timeslot)
+    if existing:
+        result = existing
+    else:
+        result = crud.course_timeslot.create(db=db, obj_in=timeslot)
+    return result
+
+
+@router.post("/translate", response_model=List[schemas.CourseTimeslot])
+def translate_encoded_string_to_timeslots(
+    *, db: Session = Depends(depends.get_db), timeslot_exp: schemas.TimeSlotExp,
+) -> Any:
+    """ Retrieve timeslot information based on the code provided"""
+    if timeslot_exp.kind == TimeSlotKind.nctu:
+        timeslots = time_slot_parser_nctu.to_time_slots(timeslot_exp.value)
+        output = crud.course_timeslot.find_timeslots(db, timeslots=timeslots)
+        return output
+    else:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Request kind have not been implemented in the endpoint: {timeslot_exp.kind}",
+        )
 
 
 @router.get("/{timeslot_id}", response_model=schemas.CourseTimeslot)
