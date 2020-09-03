@@ -1,11 +1,10 @@
 from datetime import datetime
-from typing import Optional, Dict, Any, Type
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
 from app.models.course_timeslot import TimeSlotKind, WeekDay
 
-from pprint import pprint
 
 # Shared properties
 class CourseTimeslotBase(BaseModel):
