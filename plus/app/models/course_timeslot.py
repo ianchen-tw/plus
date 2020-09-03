@@ -1,6 +1,7 @@
 import enum
 
-from sqlalchemy import Column, DateTime, Enum, Integer, String
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from app.db.base_class import Base
@@ -16,14 +17,20 @@ class WeekDay(enum.Enum):
     Sun = "Sun"
 
 
+class TimeSlotKind(enum.Enum):
+    """ Which kind of this timeslot used to represent data"""
+
+    nctu = "nctu"
+
+
 class CourseTimeslot(Base):
     """
     This represent a single slot in the timetable.
     e.g. 2AB would results in 2 rows in this table:
 
-      CourseTimeslot( codeName='A', weekday='Tue')
+      CourseTimeslot( code='A', weekday='Tue', timespan='8:00-8:50', kind='nctu')
       and
-      CourseTimeslot( codeName='B', weekday='Tue')
+      CourseTimeslot( code='B', weekday='Tue', timespan='9:00-8:50', kind='nctu')
     """
 
     id = Column(Integer, primary_key=True, index=True)
@@ -31,6 +38,12 @@ class CourseTimeslot(Base):
     update_at = Column(DateTime, nullable=False, default=func.now(), onupdate=func.now())
 
     # general info
-    code_name = Column(String, nullable=False)  # may duplicate
-    description = Column(String, nullable=False)  # e.g. "8:00-8:50"
+    code = Column(String, nullable=False)  # may duplicate
+    timespan = Column(String, nullable=False)  # e.g. "8:00-8:50"
     weekday = Column(Enum(WeekDay), nullable=False)
+    kind = Column(Enum(TimeSlotKind), nullable=False)
+
+    # Relation
+    # A CourseTimeslot belongs to a single course
+    course_id = Column(Integer, ForeignKey("course.id", ondelete="CASCADE"))
+    course = relationship("Course", back_populates="timeslots")

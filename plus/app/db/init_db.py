@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 
-from app import crud, schemas
 from app.db import base  # noqa: F401
 
 # make sure all SQL Alchemy models are imported (app.db.base) before initializing DB
@@ -15,14 +14,10 @@ def init_db(db: Session, use_fakedata=True) -> None:
     from app.db.session import engine
 
     base.Base.metadata.create_all(bind=engine)
-
+    # Warning: Runnning tests would flush out the data created here entirely
     if use_fakedata:
         base.Base.metadata.drop_all(bind=engine)
         base.Base.metadata.create_all(bind=engine)
-
-        college = crud.college.create(
-            db=db, obj_in=schemas.CollegeCreate(name="init", code="AX")
-        )
 
     # # Create Superuser
     # user = crud.user.get_by_email(db, email=settings.FIRST_SUPERUSER)
