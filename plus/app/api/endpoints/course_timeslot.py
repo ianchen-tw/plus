@@ -9,7 +9,7 @@ from app.api import depends
 router = APIRouter()
 
 
-@router.get("/", response_model=List[schemas.CourseTimeslot])
+@router.get("/", response_model=List[schemas.CourseTimeslotInDB])
 def get_list_of_timeslots(
     db: Session = Depends(depends.get_db), skip: int = 0, limit: int = 100
 ) -> List[Any]:
@@ -18,7 +18,7 @@ def get_list_of_timeslots(
     return timeslots
 
 
-@router.get("/{timeslot_id}", response_model=schemas.CourseTimeslot)
+@router.get("/{timeslot_id}", response_model=schemas.CourseTimeslotInDB)
 def read_timeslot_information(
     *, db: Session = Depends(depends.get_db), timeslot_id: int,
 ) -> Any:
