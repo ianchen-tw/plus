@@ -3,7 +3,7 @@ from typing import List
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
-from app.core.timetable import TimeSlot
+from app.core.objects import CodedTimeInterval
 from app.crud.base import CRUDBase
 from app.models.course import Course
 from app.models.course_timeslot import CourseTimeslot
@@ -21,11 +21,11 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
         db: Session,
         *,
         course: Course,
-        timeslots_internal: List[TimeSlot],
+        time_intervals: List[CodedTimeInterval],
         commit: bool = True,
     ):
-        for t in timeslots_internal:
-            arg_dict = {**t._asdict(), "course_id": course.id}
+        for t in time_intervals:
+            arg_dict = {**t.as_dict(), "course_id": course.id}
             timeslot_to_create = CourseTimeslotCreate(**arg_dict)
             timeslot_obj = CourseTimeslot(**dict(timeslot_to_create))
             db.add(timeslot_obj)
@@ -36,7 +36,11 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
 
     # override the base type
     def create(
-        self, db: Session, *, obj_in: CourseCreate, timeslots_internal: List[TimeSlot]
+        self,
+        db: Session,
+        *,
+        obj_in: CourseCreate,
+        time_intervals: List[CodedTimeInterval],
     ) -> Course:
         obj_in_data = jsonable_encoder(obj_in)
         course = self.model(**obj_in_data)  # type: ignore
@@ -45,7 +49,7 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
         db.flush()  # generate course.id
         # create timeslots inside base on the internal timeslot format
         self._add_timeslots(
-            db=db, course=course, timeslots_internal=timeslots_internal, commit=False
+            db=db, course=course, time_intervals=time_intervals, commit=False
         )
         db.commit()
         db.refresh(course)
@@ -57,7 +61,7 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
         *,
         course: Course,
         obj_in: CourseUpdate,
-        new_timeslots_internal: List[TimeSlot],
+        new_timeslots_internal: List[CodedTimeInterval],
     ) -> Course:
         obj_data = jsonable_encoder(course)
         if isinstance(obj_in, dict):
@@ -74,10 +78,7 @@ class CRUDCourse(CRUDBase[Course, CourseCreate, CourseUpdate]):
                 CourseTimeslot.course_id == course.id
             ).delete()
             self._add_timeslots(
-                db=db,
-                course=course,
-                timeslots_internal=new_timeslots_internal,
-                commit=False,
+                db=db, course=course, time_intervals=new_timeslots_internal, commit=False,
             )
         db.add(course)
         db.commit()

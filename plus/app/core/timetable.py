@@ -1,12 +1,6 @@
-from collections import namedtuple
 from typing import List
 
-
-# TODO: write TimeSlot usin attrs:
-# https://www.attrs.org/en/stable/index.html
-class TimeSlot(namedtuple("TimeSlot", "code weekday timespan kind")):  # noqa
-    def __eq__(self, other):
-        return all([getattr(self, f) == getattr(other, f) for f in self._fields])
+from .objects import CodedTimeInterval
 
 
 class TimetableInterface:
@@ -14,7 +8,7 @@ class TimetableInterface:
     """
 
     # -- Abstract Methods
-    def gen_timeslot(self, code: str, weekday_int: int) -> TimeSlot:
+    def gen_time_interval(self, code: str, weekday_int: int) -> CodedTimeInterval:
         """ Generate a timeslot object based on the given information
             code: code name of this timeslot
             weekday_int: 1-7 (Mon-Sun)
@@ -22,7 +16,7 @@ class TimetableInterface:
             kind: which kind of system it use
         """
         # Some things that a child class might need to take care:
-        #   + populate the `kind` field of the TimeSlot
+        #   + populate the `kind` field of the CodedTimeInterval
         #   + translate the weekday_int into the actual weekday by self._to_weekday
         raise NotImplementedError()
 
@@ -80,14 +74,14 @@ class TimeTableNCTU(TimetableInterface):
         self.kind = "nctu"
 
     # -- Implementation of abstract methods
-    def gen_timeslot(self, code: str, weekday_int: int) -> TimeSlot:
+    def gen_time_interval(self, code: str, weekday_int: int) -> CodedTimeInterval:
         if code.upper() not in self.__timespan_dic:
             raise Exception(f"not valid codename:{code}")
         if not (1 <= weekday_int <= 7):
             # Comparison chainning
             # https://docs.python.org/3/reference/expressions.html#comparisons
             raise Exception(f"not valid weekday:{weekday_int}")
-        return TimeSlot(
+        return CodedTimeInterval(
             code=code.upper(),
             weekday=self._to_weekday(weekday_int),
             timespan=self.__timespan_dic[code],
