@@ -2,7 +2,8 @@ from typing import Generator
 
 import pytest
 
-from ..timetable import TimeSlot, TimeTableNCTU
+from ..objects import CodedTimeInterval
+from ..timetable import TimeTableNCTU
 
 
 @pytest.fixture(scope="module")
@@ -25,14 +26,14 @@ def test_valid_code(table):
 
 @pytest.mark.unit
 def test_gen_timespan(table):
-    ts = TimeSlot(code="I", weekday="Fri", timespan="18:30-19:20", kind="nctu")
-    result = table.gen_timeslot(code="I", weekday_int=5)
+    ts = CodedTimeInterval(code="I", weekday="Fri", timespan="18:30-19:20", kind="nctu")
+    result = table.gen_time_interval(code="I", weekday_int=5)
     assert ts == result
 
 
 @pytest.mark.unit
 def test_gen_timespan_should_raise_error_on_malformed_input(table):
     with pytest.raises(Exception):
-        table.gen_timeslot(code="I", weekday_int=-999)
+        table.gen_time_interval(code="I", weekday_int=-999)
     with pytest.raises(Exception):
-        table.gen_timeslot(code="ZZZZ", weekday_int=3)
+        table.gen_time_interval(code="ZZZZ", weekday_int=3)

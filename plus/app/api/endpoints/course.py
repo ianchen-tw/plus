@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app import crud, schemas
 from app.api import depends
-from app.core import timeslot_parser
+from app.core import time_interval_parser
 
 router = APIRouter()
 
@@ -50,9 +50,9 @@ def create_course(
     else:
         # course_in.timeslots is actually a timeslot_exp but not timeslots
         timeslot_exp = course_in.timeslots
-        timeslots_internal = timeslot_parser.parse_timeslots(exp=timeslot_exp)
+        time_intervals = time_interval_parser.parse_time_intervals(exp=timeslot_exp)
         course = crud.course.create(
-            db=db, obj_in=base_info_of_new_course, timeslots_internal=timeslots_internal
+            db=db, obj_in=base_info_of_new_course, time_intervals=time_intervals
         )
         return course
 
@@ -96,7 +96,7 @@ def update_course(
     provided_timeslot_exp = course_in.timeslots
     provided_timeslots_internal = []
     if provided_timeslot_exp != None:
-        provided_timeslots_internal = timeslot_parser.parse_timeslots(
+        provided_timeslots_internal = time_interval_parser.parse_time_intervals(
             exp=provided_timeslot_exp
         )
 

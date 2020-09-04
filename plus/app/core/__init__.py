@@ -1,15 +1,18 @@
 from ..models.course_timeslot import TimeSlotKind
-from .timeslot_converter import TimeSlotConverterNCTU, TimeSlotConvertException
-from .timeslot_parser import TimeSlotParseException, TimeSlotParser
+from .time_interval_converter import (
+    TimeIntervalConverterNCTU,
+    TimeIntervalConvertException,
+)
+from .time_interval_parser import TimeIntervalParseException, TimeIntervalParser
 from .timetable import TimeTableNCTU
 
 # Parser
-converters_map = {TimeSlotKind.nctu: TimeSlotConverterNCTU(TimeTableNCTU())}
-timeslot_parser = TimeSlotParser(converters_map=converters_map)
+converters_map = {TimeSlotKind.nctu: TimeIntervalConverterNCTU(TimeTableNCTU())}
+time_interval_parser = TimeIntervalParser(converters_map=converters_map)
 
 
 __all__ = [
-    "timeslot_parser",
-    "TimeSlotParseException",
-    "TimeSlotConvertException",
+    "time_interval_parser",
+    "TimeIntervalParseException",
+    "TimeIntervalConvertException",
 ]

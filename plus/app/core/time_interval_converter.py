@@ -1,26 +1,27 @@
 import re
 from typing import List
 
-from .timetable import TimeSlot, TimetableInterface
+from .objects import CodedTimeInterval
+from .timetable import TimetableInterface
 
 
-class TimeSlotConvertException(Exception):
+class TimeIntervalConvertException(Exception):
     pass
 
 
-class TimeSlotConverterInterface:
-    """Convert specific timeslot encoding into TimeSlots
+class TimeIntervalConverterInterface:
+    """Convert specific timeslot encoding into CodedTimeInterval
     This Converter only do one thing:
         Use on a specific instance of TimetableInterface parse encoded timeslot string
-        into a list of TimeSlots.
+        into a list of CodedTimeIntervals.
     Whether the timetable could be injected from the constructor of the child class
     """
 
-    def to_time_slots(self, s: str) -> List[TimeSlot]:
+    def to_time_intervals(self, s: str) -> List[CodedTimeInterval]:
         raise NotImplementedError()
 
 
-class TimeSlotConverterNCTU(TimeSlotConverterInterface):
+class TimeIntervalConverterNCTU(TimeIntervalConverterInterface):
     def __init__(self, timetable: TimetableInterface):
         self.__timetable = timetable
 
@@ -35,27 +36,27 @@ class TimeSlotConverterNCTU(TimeSlotConverterInterface):
 
     # -- Implementation of abstract methods
 
-    def to_time_slots(self, s: str) -> List[TimeSlot]:
-        """ Break a encoded string into timeslots
+    def to_time_intervals(self, s: str) -> List[CodedTimeInterval]:
+        """ Break a encoded string into timeintervals
             e.g. "2A5CD" ->  ['2A', '5C', '5D']
 
             The user must ensure that :
                 1. the input string must be encoded in valid format.
                 2. the input string only contains uppercase and digit
-            This method would raise TimeSlotParseException if the user don't
+            This method would raise TimeIntervalParseException if the user don't
                 comply with the condiiton above.
         """
         if self.__valid_encoding.match(s) == None:
-            raise TimeSlotConvertException
+            raise TimeIntervalConvertException
         if s.upper() != s:
-            raise TimeSlotConvertException
+            raise TimeIntervalConvertException
         daily_schedule = self.__daily_schedule.findall(s)
         result = {}
         for weekday, timeslots in daily_schedule:
             for t in timeslots:
                 key = f"{weekday}{t}"
                 if key not in result:
-                    result[key] = self.__timetable.gen_timeslot(
+                    result[key] = self.__timetable.gen_time_interval(
                         code=t, weekday_int=int(weekday)
                     )
         return list(result.values())
