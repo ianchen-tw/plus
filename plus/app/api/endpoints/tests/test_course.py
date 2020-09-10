@@ -139,7 +139,6 @@ def test_update_course(client, courses):
     assert response.json()["credit"] == 999
 
 
-@pytest.mark.dev
 def test_delete_courses(client, courses):
     course_create = courses.pick()
 
