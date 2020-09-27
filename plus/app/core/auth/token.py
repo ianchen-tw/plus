@@ -26,5 +26,6 @@ class Token:
         to_verify = jwt.JWT(key=self.key, jwt=to_verify)
         to_verify = jwt.JWT(key=self.key, jwt=to_verify.claims)
         claim = json.loads(to_verify.claims)
-        print(claim.get("username"))
-        return claim.get("username")
+        print(claim.get("uid"))
+        # if not pass, throw 401
+        return claim.get("uid")
