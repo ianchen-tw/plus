@@ -42,6 +42,7 @@ class CourseTimeslot(Base):
     timespan = Column(String, nullable=False)  # e.g. "8:00-8:50"
     weekday = Column(Enum(WeekDay), nullable=False)
     kind = Column(Enum(TimeSlotKind), nullable=False)
+    location = Column(String, nullable=False)
 
     # Relation
     # A CourseTimeslot belongs to a single course

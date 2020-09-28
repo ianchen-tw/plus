@@ -10,8 +10,9 @@ from app.models.course_timeslot import TimeSlotKind, WeekDay
 class CourseTimeslotBase(BaseModel):
     code: str = Field(example="A")
     timespan: str = Field(example="7:00-7:50")
-    weekday: WeekDay = Field(example="Fri")
-    kind: TimeSlotKind = Field(example="nctu")
+    weekday: WeekDay = Field(example=WeekDay.Fri)
+    kind: TimeSlotKind = Field(example=TimeSlotKind.nctu)
+    location: str = Field(example="EC022")
 
 
 class CourseTimeslotCreate(CourseTimeslotBase):
@@ -21,16 +22,29 @@ class CourseTimeslotCreate(CourseTimeslotBase):
 class CourseTimeslotUpdate(CourseTimeslotBase):
     """Class for validating update CourseTimeslot request"""
 
-    code: Optional[str] = None
-    timespan: Optional[int] = None
-    weekday: Optional[WeekDay] = None
-    kind: Optional[TimeSlotKind] = None
+    code: Optional[str] = Field(None, example="B")
+    timespan: Optional[int] = Field(None, example="8:00-8:50")
+    weekday: Optional[WeekDay] = Field(None, example=WeekDay.Tue)
+    kind: Optional[TimeSlotKind] = Field(None, example=TimeSlotKind.nctu)
+    location: str = Field(None, example="EC022")
 
 
 # Propeties to return to client
 class CourseTimeslot(CourseTimeslotBase):
     class Config:
         orm_mode = True
+
+    @classmethod
+    def get_example(cls):
+        # There's a bug in FastAPI for rendering nested example by default Field() method,
+        # so we defined our exmaple method and get it outside
+        return CourseTimeslot(
+            code="C",
+            timespan="10:00-10:50",
+            weekday=WeekDay.Wed,
+            kind=TimeSlotKind.nctu,
+            location="ED202",
+        )
 
 
 # Properties shared by models stored in DB

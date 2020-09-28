@@ -6,8 +6,22 @@ from sqlalchemy.orm import Session
 from app import crud, schemas
 from app.api import depends
 from app.core import time_interval_parser
+from app.crud.crud_course import TimeIntervals_Location
+from app.schemas.course import TimeExpLocation
 
 router = APIRouter()
+
+
+def timeExpLoc_to_timeIntervalsLoc(
+    time_exp_loc: TimeExpLocation,
+) -> TimeIntervals_Location:
+    """ Helper function for converting
+        {time_exp, loc} to { List[time_interval], loc}
+    """
+    timeslot_exp, location = time_exp_loc.time, time_exp_loc.location
+    # pure time interval without location info
+    time_intervals = time_interval_parser.parse_time_intervals(exp=timeslot_exp)
+    return TimeIntervals_Location(intervals=time_intervals, location=location)
 
 
 @router.get("/", response_model=List[schemas.Course])
@@ -48,11 +62,12 @@ def create_course(
             detail="Permanent_id have been used with different course content, use /course/update instead.",
         )
     else:
-        # course_in.timeslots is actually a timeslot_exp but not timeslots
-        timeslot_exp = course_in.timeslots
-        time_intervals = time_interval_parser.parse_time_intervals(exp=timeslot_exp)
+        # Extract time_exp into intervals
+        time_locations = [
+            timeExpLoc_to_timeIntervalsLoc(t) for t in course_in.time_locations
+        ]
         course = crud.course.create(
-            db=db, obj_in=base_info_of_new_course, time_intervals=time_intervals
+            db=db, obj_in=base_info_of_new_course, time_locations=time_locations
         )
         return course
 
@@ -92,20 +107,16 @@ def update_course(
             status_code=404,
             detail="The course with this name does not exist in the system",
         )
-
-    provided_timeslot_exp = course_in.timeslots
-    provided_timeslots_internal = []
-    if provided_timeslot_exp != None:
-        provided_timeslots_internal = time_interval_parser.parse_time_intervals(
-            exp=provided_timeslot_exp
-        )
-
+    timeExpLocs = course_in.time_locations
+    time_locations = (
+        [timeExpLoc_to_timeIntervalsLoc(t) for t in timeExpLocs] if timeExpLocs else None
+    )
     course_update = schemas.CourseUpdate(**dict(course_in))
     course = crud.course.update(
         db=db,
         course=course_orm_obj,
         obj_in=course_update,
-        new_timeslots_internal=provided_timeslots_internal,
+        new_time_locations=time_locations,
     )
     return course
 

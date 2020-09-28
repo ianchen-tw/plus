@@ -11,8 +11,15 @@ class Course(Base):
     update_at = Column(DateTime, nullable=False, default=func.now(), onupdate=func.now())
 
     # general info
+    en_name = Column(String)
+    zh_name = Column(String)
+    course_number = Column(String)
+    course_type = Column(String)
+    department_en = Column(String)
+    department_zh = Column(String)
+
     permanent_id = Column(String, unique=True)
-    credit = Column(Integer)
+    credit = Column(String)
     hours = Column(Integer)  # do we need this?
     semester = Column(String)
     teacher = Column(String)
