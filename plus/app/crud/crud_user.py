@@ -14,10 +14,6 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
 
     def create(self, db: Session, *, obj_in: UserCreate) -> User:
         obj_in_data = jsonable_encoder(obj_in)
-        # print('obj_in_data', obj_in_data)
-        # user_create = UserCreate(**obj_in)
-        # print('user create', user_create)
-        # user = User(**dict(user_create))
         user = self.model(**obj_in_data)
 
         db.add(user)
