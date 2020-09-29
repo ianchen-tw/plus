@@ -18,7 +18,7 @@ services:
             # see https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker for reference
             - VARIABLE_NAME=server
             - MODULE_NAME=app.main
-            - PORT=8888
+            - PORT=10080
 
         build:
             context: ./plus

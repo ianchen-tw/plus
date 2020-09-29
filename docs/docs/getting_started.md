@@ -38,7 +38,7 @@ docker-compose build
 
 Use `docker-compose up` to start the project.
 
-Open your browser with `localhost:8888` to see the result.
+Open your browser with `localhost:10080` to see the result.
 
 See [Develop Inside Container][dev_container], `Code of Conducts`(wip) for more information.
 

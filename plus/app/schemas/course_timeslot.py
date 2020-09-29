@@ -1,16 +1,17 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
-from app.models.course_timeslot import WeekDay
+from app.models.course_timeslot import TimeSlotKind, WeekDay
 
 
 # Shared properties
 class CourseTimeslotBase(BaseModel):
-    code_name: str
-    description: str
-    weekday: WeekDay
+    code: str = Field(example="A")
+    timespan: str = Field(example="7:00-7:50")
+    weekday: WeekDay = Field(example="Fri")
+    kind: TimeSlotKind = Field(example="nctu")
 
 
 class CourseTimeslotCreate(CourseTimeslotBase):
@@ -20,28 +21,28 @@ class CourseTimeslotCreate(CourseTimeslotBase):
 class CourseTimeslotUpdate(CourseTimeslotBase):
     """Class for validating update CourseTimeslot request"""
 
-    code_name: Optional[str] = None
-    description: Optional[int] = None
+    code: Optional[str] = None
+    timespan: Optional[int] = None
     weekday: Optional[WeekDay] = None
+    kind: Optional[TimeSlotKind] = None
+
+
+# Propeties to return to client
+class CourseTimeslot(CourseTimeslotBase):
+    class Config:
+        orm_mode = True
 
 
 # Properties shared by models stored in DB
 class CourseTimeslotInDBBase(CourseTimeslotBase):
-    id: int
-    code_name: str
-    description: str
-    weekday: WeekDay
+    id: int = Field(example=1)
+    course_id: int = Field(example=34)
 
     create_at: datetime
     update_at: datetime
 
     class Config:
         orm_mode = True
-
-
-# Propeties to return to client
-class CourseTimeslot(CourseTimeslotInDBBase):
-    pass
 
 
 # Properties stored in DB

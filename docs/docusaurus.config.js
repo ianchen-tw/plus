@@ -13,7 +13,7 @@ module.exports = {
         alt: "plus logo",
         src: "img/nctuplus_logo_22.png",
       },
-      links: [
+      items: [
         {
           to: "docs/intro",
           activeBasePath: "docs",
