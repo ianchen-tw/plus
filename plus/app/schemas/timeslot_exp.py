@@ -1,14 +1,19 @@
 import re
 
-from pydantic import BaseModel, ValidationError, validator
+from pydantic import BaseModel, Field, ValidationError, validator
 
 from ..models.course_timeslot import TimeSlotKind
 
 
 class TimeSlotExp(BaseModel):
 
-    kind: TimeSlotKind
-    value: str
+    kind: TimeSlotKind = Field(example=TimeSlotKind.nctu)
+    value: str = Field(example="2EF5G")
+
+    @classmethod
+    def get_example(cls):
+        # There's a bug for FastAPI to render nested example by default Field() method, so we defined it here
+        return TimeSlotExp(kind=TimeSlotKind.nctu, value="3EF5G")
 
     @validator("value")
     def number_and_code(cls, v, values):  # noqa
@@ -22,7 +27,3 @@ class TimeSlotExp(BaseModel):
             return v
         else:
             raise ValidationError(f"Not recognized encoding type: {kind}")
-
-    # Provide example for openapi
-    class Config:
-        schema_extra = {"example": {"kind": "nctu", "value": "2EF5G",}}
