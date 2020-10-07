@@ -1,4 +1,5 @@
 from ..models.course_timeslot import TimeSlotKind
+from .fake_nctu import fakeNctu
 from .time_interval_converter import (
     TimeIntervalConverterNCTU,
     TimeIntervalConvertException,
@@ -15,4 +16,5 @@ __all__ = [
     "time_interval_parser",
     "TimeIntervalParseException",
     "TimeIntervalConvertException",
+    "fakeNctu",
 ]

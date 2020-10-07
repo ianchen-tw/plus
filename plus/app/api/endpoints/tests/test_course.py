@@ -3,56 +3,27 @@ from typing import Dict, Generator
 
 import pytest
 
-from app.testutil import fakeChinese
+from app.testutil import fakeChinese, fakeNctu
 
 
 # -- helper functions
 # TODO: write a custom faker provider for course
 # https://github.com/joke2k/faker#how-to-create-a-provider
 def gen_course_data_nctu():
-    def _timelocations():
-        timeslots = ["1A5CD", "2CDX", "3GH4E", "4G"]
-
-        # M-b09: 管理一館地下室
-        locations = ["EC012", "F210", "M-b09", "AB101"]
-        return [
-            {"time": {"kind": "nctu", "value": ts}, "location": loc}
-            for (ts, loc) in zip(timeslots, locations)
-        ]
-
-    def _course_names():
-        return [
-            ("Characterization and Analysis of Polymer", "高分子定性與分析"),
-            ("Socio-cultural history of France", "法國社會文化史"),
-            ("Formal Languages and Theory of Computation", "正規語言與計算理論(英文授課)"),
-            ("Modern China: Cross-strait relations Globalization", "當代中國：全球化下的兩岸關係"),
-            ("Power Semiconductor Devices - Physics and Technology", "高功率半導體元件物理與技術"),
-            ("Advanced Eletrocardiology", "進階心臟電氣學"),
-            ("Self-Active I-Learning", "自主學習課程"),
-        ]
-
-    def _dep_names():
-        return [
-            ("Institute of Electronics", "電子研究所"),
-            ("College of Electrical Engineering", "電機共同課程"),
-            ("Department of Applied Mathematics", "應用數學系"),
-        ]
-
-    pids = [
-        f"{dep}{i}" for dep in ["DEE", "DEP", "IOE", "IME"] for i in range(1000, 1500, 5)
-    ]
-    [f"{i}{j}" for i in range(106, 109) for j in "ABX"]
-
     courses = []
-    for pid in pids:
-        en_name, zh_name = random.choice(_course_names())
-        en_dep, zh_dep = random.choice(_dep_names())
-        ctype = random.choice(["必修", "選修"])
+    for _ in range(2000):
+        en_name, zh_name = fakeNctu.course()
+        en_dep, zh_dep = fakeNctu.department()
         sem = random.choice([f"{i}{j}" for i in range(106, 109) for j in "ABX"])
-        timelocations = [random.choice(_timelocations())]
+        timelocations = [
+            {
+                "time": {"kind": "nctu", "value": fakeNctu.timeslot_exp()},
+                "location": fakeNctu.classroom(),
+            }
+        ]
         courses.append(
             {
-                "permanent_id": pid,
+                "permanent_id": fakeNctu.permanent_id(),
                 "credit": random.randint(1, 3),
                 "semester": sem,
                 "hours": random.randint(1, 6),
@@ -62,7 +33,7 @@ def gen_course_data_nctu():
                 "course_number": random.randint(1000, 9000),
                 "department_en": en_dep,
                 "department_zh": zh_dep,
-                "course_type": ctype,
+                "course_type": fakeNctu.course_type(),
                 "time_locations": timelocations,
                 "department_zh": zh_dep,
                 "department_en": en_dep,
