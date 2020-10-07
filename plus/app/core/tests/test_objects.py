@@ -11,20 +11,20 @@ def interval_arg() -> Generator:
     yield {"code": "A", "weekday": "Fri", "timespan": "8:00-9:00", "kind": "nctu"}
 
 
-@pytest.mark.dev
+@pytest.mark.unit
 def test_interval_dict(interval_arg):
     interval = CodedTimeInterval(**interval_arg)
     assert interval.as_dict() == interval_arg
 
 
-@pytest.mark.dev
+@pytest.mark.unit
 def test_interval_is_immutable(interval_arg):
     interval = CodedTimeInterval(**interval_arg)
     with pytest.raises(FrozenInstanceError):
         interval.code = "Nah"
 
 
-@pytest.mark.dev
+@pytest.mark.unit
 def test_interval_comparison():
     i1 = CodedTimeInterval(code="A", weekday="Fri", timespan="8:00-9:00", kind="nctu")
     i2 = CodedTimeInterval(code="A", weekday="Fri", timespan="8:00-9:00", kind="nctu")
