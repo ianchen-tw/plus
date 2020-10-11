@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from app import crud, schemas
 from app.api import depends
+from app.core import time_interval_parser
 
 router = APIRouter()
 
@@ -18,15 +19,42 @@ def get_list_of_courses(
     return courses
 
 
+# TODO: add log events
 @router.post("/", response_model=schemas.Course)
 def create_course(
-    *, db: Session = Depends(depends.get_db), course: schemas.CourseCreate,
+    *, db: Session = Depends(depends.get_db), course_in: schemas.CourseCreateAPI,
 ) -> Any:
     """
     Create Course
     """
-    c = crud.course.create(db=db, obj_in=course)
-    return c
+    # extract base information inside a course
+    base_info_of_new_course = schemas.CourseCreate(**dict(course_in))
+
+    course_orm_obj = crud.course.find_by_permanent_id(
+        db, pid=base_info_of_new_course.permanent_id
+    )
+
+    if course_orm_obj:
+        # if the same: return the same object
+        in_db = schemas.CourseInDB.from_orm(course_orm_obj)
+        converted = schemas.CourseCreate(**dict(in_db))
+        if base_info_of_new_course == converted:
+            return course_orm_obj
+
+        # else report error
+        # TODO: compare and show the data inside database
+        raise HTTPException(
+            status_code=409,
+            detail="Permanent_id have been used with different course content, use /course/update instead.",
+        )
+    else:
+        # course_in.timeslots is actually a timeslot_exp but not timeslots
+        timeslot_exp = course_in.timeslots
+        time_intervals = time_interval_parser.parse_time_intervals(exp=timeslot_exp)
+        course = crud.course.create(
+            db=db, obj_in=base_info_of_new_course, time_intervals=time_intervals
+        )
+        return course
 
 
 @router.get("/{course_id}", response_model=schemas.Course)
@@ -50,20 +78,35 @@ def update_course(
     *,
     db: Session = Depends(depends.get_db),
     course_id: int,
-    course_in: schemas.CourseUpdate,
+    course_in: schemas.CourseUpdateAPI,
 ) -> Any:
     """
     Update fields of a course object.
-    Will only update the field you prvide.
+
+    Provide partial fields would partially update a course object
     """
 
-    course = crud.course.get(db, id=course_id)
-    if not course:
+    course_orm_obj = crud.course.get(db, id=course_id)
+    if not course_orm_obj:
         raise HTTPException(
             status_code=404,
             detail="The course with this name does not exist in the system",
         )
-    course = crud.course.update(db, db_obj=course, obj_in=course_in)
+
+    provided_timeslot_exp = course_in.timeslots
+    provided_timeslots_internal = []
+    if provided_timeslot_exp != None:
+        provided_timeslots_internal = time_interval_parser.parse_time_intervals(
+            exp=provided_timeslot_exp
+        )
+
+    course_update = schemas.CourseUpdate(**dict(course_in))
+    course = crud.course.update(
+        db=db,
+        course=course_orm_obj,
+        obj_in=course_update,
+        new_timeslots_internal=provided_timeslots_internal,
+    )
     return course
 
 
