@@ -21,5 +21,7 @@ jobs:
         run: |
           ./onboarding.sh
           docker-compose up -d
+      - name: Basic Smoke Testing
+        run: docker-compose exec -T api-server bash .smoke_test.sh
       - name: Test
         run: docker-compose exec -T api-server bash .test.sh
