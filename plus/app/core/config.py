@@ -17,6 +17,13 @@ class OauthConfig(BaseModel):
     redirect_url: AnyHttpUrl
 
 
+class JWTConfig(BaseModel):
+    key: str
+    sign_alg: str
+    encrypt_key_alg: str
+    encrypt_alg: str
+
+
 # TODO: provide a description of this page
 class Settings(BaseSettings):
     API_V1_STR = "/api/v1"
@@ -62,6 +69,17 @@ class Settings(BaseSettings):
         ]
         configs = {f: env(f) for f in fields}
         return OauthConfig(**configs)
+
+    JWT: Optional[JWTConfig] = None
+
+    @validator("JWT", pre=True)
+    def jwt(cls, v, values, **kwargs) -> Any:
+        def env(field: str):
+            return os.getenv(f"JWT_{field}".upper())
+
+        fields = ["key", "sign_alg", "encrypt_key_alg", "encrypt_alg"]
+        configs = {f: env(f) for f in fields}
+        return JWTConfig(**configs)
 
     class Config:
         case_sensitive = True

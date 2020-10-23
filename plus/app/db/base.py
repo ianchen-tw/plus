@@ -7,3 +7,4 @@ from app.db.base_class import Base  # noqa
 from app.models.college import College  # noqa
 from app.models.course import Course  # noqa
 from app.models.course_timeslot import CourseTimeslot  # noqa
+from app.models.user import User  # noqa
